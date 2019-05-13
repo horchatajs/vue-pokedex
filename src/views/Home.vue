@@ -4,7 +4,8 @@
       <div class="py-8">
         <input class="w-full h-16 px-3 rounded mb-8 focus:outline-none focus:shadow-outline text-xl px-8 shadow-lg"
                 type="search"
-                placeholder="Buscar...">
+                placeholder="Buscar..."
+                v-model="searchText">
       </div>
       <p class="text-lg font-bold mb-2 mx-4">Tipos de Pokemon</p>
       <div class="mx-4 flex justify-betwwen w-full flex-wrap">
@@ -20,27 +21,20 @@
           </div>
       </div>
     </section>
-    <div class="flex flex-col w-full sm:w-1/2 md:w-1/3 xl:w-1/4 text-center mx-auto px-4 mb-6 relative group">
-      <div class="mb-2 relative w-36 h-48 flex items-center justify-center group-hover:shadow-lg">
-        <div class="absolute flex w-full h-full">
-          <div class="w-full bg-poison"></div>
-          <div class="w-full bg-grass"></div>
-        </div>
-        <img src="@/assets/images/pokemons/bulbasaur-min.gif"
-             alt="bulbasaur"
-             width="100"
-             height="100"
-             class="z-50 relative py-4">
-      </div>
-      <div class="capitalize font-bold text-lg">bulbasaur</div>
-    </div>
+    <pokemon v-for="pokemon in filteredPokemons"
+             :key="pokemon.name"
+             :pokemon="pokemon"></pokemon>
 
   </div>
 </template>
 
 <script>
+import Pokemon from "@/components/Pokemon";
 export default {
   name: "home",
+  components: {
+    Pokemon
+  },
   data() {
     return {
       selectedPokemonTypes: [],
@@ -54,8 +48,36 @@ export default {
         "normal",
         "electric",
         "psychic"
-      ]
+      ],
+      pokemons: [],
+      searchText: ""
     };
+  },
+  computed: {
+    filteredPokemons() {
+      return this.pokemons
+        .filter(pokemon => pokemon.name.includes(this.searchText))
+        .filter(pokemon => {
+          if (this.selectedPokemonTypes.length === 0) return true;
+          return pokemon.types.find(type =>
+            this.selectedPokemonTypes.includes(type)
+          );
+        });
+    }
+  },
+  mounted() {
+    this.getPokemons();
+  },
+  methods: {
+    async getPokemons() {
+      try {
+        const response = await fetch("/pokemons.json");
+        const json = await response.json();
+        this.pokemons = json;
+      } catch (error) {
+        console.log(error);
+      }
+    }
   }
 };
 </script>

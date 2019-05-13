@@ -20,6 +20,7 @@
             <span class="font-bold">Habilidades:</span> First, second
           </p>
         </div>
+      <pokemon :pokemon="pokemon"></pokemon>
       </div>
       <div class="text-center">
         <router-link :to="{name: 'home'}" class="no-underline font-bold text-lg">Regresar</router-link>
@@ -29,8 +30,12 @@
 </template>
 
 <script>
+import Pokemon from "@/components/Pokemon";
 export default {
   name: "PokemonDetail",
+  components: {
+    Pokemon
+  },
   data() {
     return {
       pokemon: {}
